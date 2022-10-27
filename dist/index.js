@@ -66,14 +66,16 @@ if ((0, lodash_1.isString)(inputAllowBranches)) {
         allowBranches = [...allowBranches, ...sp];
     }
 }
+const shouldAllow = allowBranches.indexOf(inputCurrentBranch) > -1;
 console.log({
     current_branch: inputCurrentBranch,
     allow_branches: allowBranches.join(', '),
+    should_deploy: shouldAllow,
 });
-const shouldAllow = allowBranches.indexOf(inputCurrentBranch) > -1;
 if (shouldAllow) {
     core.setOutput('should_deploy', JSON.stringify(shouldAllow));
     core.setOutput('allow_branches', allowBranches.join(', '));
+    core.setOutput('current_branch', inputAllowBranches);
 }
 else {
     core.setFailed(`Branch "${inputCurrentBranch}" is not allowed to deployed.`);
