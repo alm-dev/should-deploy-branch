@@ -7,15 +7,11 @@ try {
 
   console.log({
     currentBranch: currentBranch || '__none__',
-    allow_branches: currentBranch || '__none__',
+    allow_branches: allow_branches || '__none__',
   });
 
   const time = (new Date()).toTimeString();
-  core.setOutput('should_deploy', false);
-
-  // Get the JSON webhook payload for the event that triggered the workflow
-  const payload = JSON.stringify(github.context.payload, undefined, 2)
-  console.log(`The event payload: ${payload}`);
+  core.setOutput('should_deploy', JSON.stringify(false));
 
 } catch (error) {
   core.setFailed(
