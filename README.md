@@ -4,9 +4,9 @@ Whether or not, should allow to deploy current branch
 
 ## Inputs
 
-```current_branch``` - The current branch name to be checked
+```current_branch``` - {string} The current branch name to be checked
 
-```allow_branches``` - An array of branches to allow e.g.
+```allow_branches``` - {string[]} - Branches to allow e.g.
 
 ```
 allow_branches:
@@ -15,3 +15,8 @@ allow_branches:
   - sit
   - ppr, ppr-eu, ppr-aps
 ```
+
+## Outputs
+
+```should_deploy``` - {boolean} - Whether or not to allow deploy.
+
