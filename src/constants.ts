@@ -1,4 +1,4 @@
-export const ALLOW_BRANCHES = [
+export const DEFAULT_ALLOWED_BRANCHES = [
     'dev',
     'qa',
     'sit',

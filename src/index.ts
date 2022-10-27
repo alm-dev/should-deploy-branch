@@ -1,20 +1,24 @@
 import * as core from '@actions/core';
-import * as github from '@actions/github';
+import { isString } from 'lodash';
+import { DEFAULT_ALLOWED_BRANCHES } from './constants';
 
-try {
-  const currentBranch = core.getInput('current_branch');
-  const allow_branches = core.getInput('allow_branches');
+const inputCurrentBranch = core.getInput('current_branch');
+const inputAllowBranches = core.getInput('allow_branches');
 
-  console.log({
-    currentBranch: currentBranch || '__none__',
-    allow_branches: allow_branches || '__none__',
-  });
+let allowBranches = DEFAULT_ALLOWED_BRANCHES;
+if (isString(inputAllowBranches)) {
+  const sp = inputAllowBranches.trim().split(',')
+    .map(item => item.trim())
+    .filter(item => item.length > 0);
+  if (sp.length > 0) {
+    allowBranches = [...allowBranches, ...sp];
+  }
+}
 
-  const time = (new Date()).toTimeString();
-  core.setOutput('should_deploy', JSON.stringify(false));
+const shouldAllow = allowBranches.indexOf(inputCurrentBranch) > -1;
 
-} catch (error) {
-  core.setFailed(
-    (error as unknown as Error).message
-  );
+if (shouldAllow) {
+  core.setOutput('should_deploy', JSON.stringify(shouldAllow));
+} else {
+  core.setFailed(`Branch "${inputCurrentBranch}" is not allowed to deployed.`);
 }

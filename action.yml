@@ -2,11 +2,11 @@ name: 'Should Deploy Branch'
 description: 'Whether to deploy a branch or not'
 inputs:
   current_branch:  # id of input
-    description: 'The current name of branch e.g. dev, qa, sit, etc'
+    description: 'The current name of branch e.g. "dev"'
     required: true
   allow_branches:
-    description: 'Branches array to allow'
-    required: true
+    description: 'Comma-separated string of branches to allow e.g. "dev, qa, ..."'
+    required: false
 outputs:
   should_deploy: # id of output
     description: 'Whether to deploy or not'
