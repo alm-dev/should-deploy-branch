@@ -15,10 +15,16 @@ if (isString(inputAllowBranches)) {
   }
 }
 
+console.log({
+  current_branch: inputCurrentBranch,
+  allow_branches: allowBranches.join(', '),
+})
+
 const shouldAllow = allowBranches.indexOf(inputCurrentBranch) > -1;
 
 if (shouldAllow) {
   core.setOutput('should_deploy', JSON.stringify(shouldAllow));
+  core.setOutput('allow_branches', allowBranches.join(', '));
 } else {
   core.setFailed(`Branch "${inputCurrentBranch}" is not allowed to deployed.`);
 }

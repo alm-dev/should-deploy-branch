@@ -10,6 +10,8 @@ inputs:
 outputs:
   should_deploy: # id of output
     description: 'Whether to deploy or not'
+  allow_branches: #id of output
+    description: 'Comma-separated string of branches to allow'
 runs:
   using: 'node16'
   main: 'dist/index.js'
