@@ -1,9 +1,17 @@
 import * as core from '@actions/core';
+import * as github from '@actions/github';
 import { isString } from 'lodash';
 import { DEFAULT_ALLOWED_BRANCHES } from './constants';
 
 const inputCurrentBranch = core.getInput('current_branch');
 const inputAllowBranches = core.getInput('allow_branches');
+const inputGithubEnv = core.getInput('github_env');
+
+console.log("input github env", inputGithubEnv);
+
+// Get the JSON webhook payload for the event that triggered the workflow
+const payload = JSON.stringify(github.context.payload, undefined, 2)
+console.log(`The event payload: ${payload}`);
 
 let allowBranches = DEFAULT_ALLOWED_BRANCHES;
 if (isString(inputAllowBranches)) {
