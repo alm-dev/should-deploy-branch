@@ -49,7 +49,7 @@ function run() {
         const inputCurrentBranch = core.getInput('current_branch');
         const inputAllowBranches = core.getInput('allow_branches');
         const inputGithubEnv = core.getInput('github_env');
-        yield (0, utils_1.setGithubEnv)('SINH', 'YES NGUYEN');
+        yield (0, utils_1.setGithubEnv)('SINH', 'YES_NGUYEN');
         console.log("input github env", inputGithubEnv || '__none__');
         // Get the JSON webhook payload for the event that triggered the workflow
         const payload = JSON.stringify(github.context.payload, undefined, 2);
@@ -79,7 +79,9 @@ function run() {
         }
     });
 }
-run();
+run()
+    .then(() => console.log('done'))
+    .catch(() => console.log('error'));
 
 
 /***/ }),
@@ -144,9 +146,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setGithubEnv = void 0;
+exports.setGithubEnv = exports.sleep = void 0;
 const io = __importStar(__nccwpck_require__(8974));
 const exec = __importStar(__nccwpck_require__(9710));
+/**
+ * Sleep
+ *
+ * @public
+ * @async
+ * @param ms - Number of millisecond to sleep
+ */
+function sleep(ms) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise(resolve => {
+            setTimeout(resolve, ms);
+        });
+    });
+}
+exports.sleep = sleep;
 /**
  * Set github env variable
  *
@@ -157,8 +174,10 @@ const exec = __importStar(__nccwpck_require__(9710));
  */
 function setGithubEnv(name, value) {
     return __awaiter(this, void 0, void 0, function* () {
-        const pythonPath = yield io.which('echo', true);
-        yield exec.exec(`"${pythonPath}"`, [`"${name}=${value}" >> $GITHUB_ENV`]);
+        const echoPath = yield io.which('echo', true);
+        yield exec.exec('echo', [`"${name}=${value}" >> $GITHUB_ENV`]);
+        yield sleep(5000);
+        // await exec.exec(`"${echoPath}"`, [`"${name}=${value}" >> $GITHUB_ENV`]);
     });
 }
 exports.setGithubEnv = setGithubEnv;
