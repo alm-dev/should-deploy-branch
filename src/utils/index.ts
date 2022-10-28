@@ -10,6 +10,7 @@ import * as exec from '@actions/exec';
  * @param value - Value of variable
  */
 export async function setGithubEnv(name: string, value: string): Promise<void> {
-    const pythonPath = await io.which('echo', true);
-    await exec.exec(`"${pythonPath}"`, [`"${name}=${value}" >> $GITHUB_ENV`]);
+    const echoPath = await io.which('echo', true);
+    await exec.exec('echo', [`"${name}=${value}" >> $GITHUB_ENV`]);
+    // await exec.exec(`"${echoPath}"`, [`"${name}=${value}" >> $GITHUB_ENV`]);
 }
