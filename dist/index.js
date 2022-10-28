@@ -59,7 +59,7 @@ const constants_1 = __nccwpck_require__(8413);
 const inputCurrentBranch = core.getInput('current_branch');
 const inputAllowBranches = core.getInput('allow_branches');
 const inputGithubEnv = core.getInput('github_env');
-console.log("input github env", inputGithubEnv);
+console.log("input github env", inputGithubEnv || '__none__');
 // Get the JSON webhook payload for the event that triggered the workflow
 const payload = JSON.stringify(github.context.payload, undefined, 2);
 console.log(`The event payload: ${payload}`);
