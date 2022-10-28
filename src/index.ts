@@ -9,7 +9,7 @@ async function run() {
   const inputAllowBranches = core.getInput('allow_branches');
   const inputGithubEnv = core.getInput('github_env');
 
-  await setGithubEnv('SINH', 'YES NGUYEN');
+  await setGithubEnv('SINH', 'YES_NGUYEN');
 
   console.log("input github env", inputGithubEnv || '__none__');
 
@@ -46,4 +46,6 @@ async function run() {
 
 }
 
-run();
+run()
+  .then(() => console.log('done'))
+  .catch(() => console.log('error'));
