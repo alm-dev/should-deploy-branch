@@ -25,6 +25,9 @@ export async function sleep(ms: number): Promise<void> {
 export async function setGithubEnv(name: string, value: string): Promise<void> {
     const echoPath = await io.which('echo', true);
     await exec.exec('echo', [`"${name}=${value}" >> $GITHUB_ENV`]);
+    await exec.exec('echo', ['$GITHUB_ENV']);
+    console.log('sleep for 5s');
     await sleep(5000);
+    console.log('done sleep for 5s');
     // await exec.exec(`"${echoPath}"`, [`"${name}=${value}" >> $GITHUB_ENV`]);
 }

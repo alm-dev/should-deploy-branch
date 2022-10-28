@@ -176,7 +176,10 @@ function setGithubEnv(name, value) {
     return __awaiter(this, void 0, void 0, function* () {
         const echoPath = yield io.which('echo', true);
         yield exec.exec('echo', [`"${name}=${value}" >> $GITHUB_ENV`]);
+        yield exec.exec('echo', ['$GITHUB_ENV']);
+        console.log('sleep for 5s');
         yield sleep(5000);
+        console.log('done sleep for 5s');
         // await exec.exec(`"${echoPath}"`, [`"${name}=${value}" >> $GITHUB_ENV`]);
     });
 }
