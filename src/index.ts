@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
-import * as github from '@actions/github';
 import { shouldAllowBranch } from './utils';
+import { downloadBranchConfigs } from './utils/dowloadConfigUtils';
 
 /**
  * Entry function
@@ -11,24 +11,14 @@ async function run(): Promise<
   // Extract input parameters
   const inputAllowBranches = core.getInput('allow_branches');
 
-  // const inputGithubEnv = core.getInput('github_env');
-  // console.log("input github env", inputGithubEnv || '__none__');
-  // console.log("github", JSON.stringify(github));
-  // console.log("github.context", JSON.stringify(github.context));
-
-  // // Get the JSON webhook payload for the event that triggered the workflow
-  // const payload = JSON.stringify(github.context.payload, undefined, 2)
-  // console.log(`The event payload: ${payload}`);
-
-  console.log('process.env', JSON.stringify(process.env));
-
+  // Perform to validate whether or not allow branch to deploy
   const { branch, shouldAllow, allowedBranches }
     = shouldAllowBranch(inputAllowBranches);
 
-  // Base case, throw if branch is not allowed
+  // Base case, throw if branch is not allowed to deploy
   if (!shouldAllow) {
     core.setFailed([
-      '**************************************************',
+      '\n**************************************************',
       `Branch "${branch}" is not allowed to deployed.`,
       '**************************************************'
     ].join('\n'));
@@ -36,7 +26,7 @@ async function run(): Promise<
   }
 
   // Export
-
+  await downloadBranchConfigs({ branch });
 
   // Print out result
   console.log({

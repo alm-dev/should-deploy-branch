@@ -2,12 +2,6 @@ name: 'Should Deploy Branch'
 description: 'Whether to deploy a branch or not'
 
 inputs:
-  # github_env: #id of input
-  #   description: 'The action to execute e.g. "SHOULD_DEPLOY_BRANCH" or "EXPORT_GITHUB_ENV", etc',
-  #   required: false
-  # current_branch:  # id of input
-  #   description: 'The current name of branch e.g. "dev"'
-  #   required: true
   allow_branches:
     description: 'Comma-separated string of extended branches to allow e.g. "dev, qa, ..."'
     required: false
