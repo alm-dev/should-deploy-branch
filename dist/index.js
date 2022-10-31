@@ -39,10 +39,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(3722));
-const utils_1 = __nccwpck_require__(2893);
 const dowloadConfigUtils_1 = __nccwpck_require__(4622);
 const extractWorkflowExports_1 = __nccwpck_require__(1437);
+const utils_1 = __nccwpck_require__(2893);
+const core = __importStar(__nccwpck_require__(3722));
 /**
  * Entry function
  */
@@ -251,8 +251,10 @@ function extractWorkflowExports(branchConfigWorkspace) {
         const dir = (0, lodash_1.trim)(branchConfigWorkspace, '/').trim();
         const workflowPath = (0, lodash_1.trim)(constants_1.GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH, '/');
         const path = `${dir}/${workflowPath}`;
+        console.log('file to export configs', path);
         // Base case
         if (!fs.existsSync(path)) {
+            console.log('does not exist', path);
             return undefined;
         }
         try {
@@ -1440,7 +1442,7 @@ var _v2 = _interopRequireDefault(__nccwpck_require__(8196));
 
 var _v3 = _interopRequireDefault(__nccwpck_require__(9357));
 
-var _v4 = _interopRequireDefault(__nccwpck_require__(2081));
+var _v4 = _interopRequireDefault(__nccwpck_require__(1494));
 
 var _nil = _interopRequireDefault(__nccwpck_require__(553));
 
@@ -1467,7 +1469,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
+var _crypto = _interopRequireDefault(__nccwpck_require__(3663));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1579,7 +1581,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = rng;
 
-var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
+var _crypto = _interopRequireDefault(__nccwpck_require__(3663));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1610,7 +1612,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
+var _crypto = _interopRequireDefault(__nccwpck_require__(3663));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1941,7 +1943,7 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 2081:
+/***/ 1494:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -2163,7 +2165,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.argStringToArray = exports.ToolRunner = void 0;
 const os = __importStar(__nccwpck_require__(2037));
 const events = __importStar(__nccwpck_require__(2361));
-const child = __importStar(__nccwpck_require__(8493));
+const child = __importStar(__nccwpck_require__(2081));
 const path = __importStar(__nccwpck_require__(1017));
 const io = __importStar(__nccwpck_require__(8974));
 const ioUtil = __importStar(__nccwpck_require__(2143));
@@ -3955,7 +3957,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.findInPath = exports.which = exports.mkdirP = exports.rmRF = exports.mv = exports.cp = void 0;
 const assert_1 = __nccwpck_require__(9491);
-const childProcess = __importStar(__nccwpck_require__(8493));
+const childProcess = __importStar(__nccwpck_require__(2081));
 const path = __importStar(__nccwpck_require__(1017));
 const util_1 = __nccwpck_require__(3837);
 const ioUtil = __importStar(__nccwpck_require__(2143));
@@ -26063,12 +26065,12 @@ module.exports.PROCESSING_OPTIONS = PROCESSING_OPTIONS;
 /***/ 9866:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-module.exports = __nccwpck_require__(3908);
+module.exports = __nccwpck_require__(6113);
 
 
 /***/ }),
 
-/***/ 3908:
+/***/ 6113:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -30330,7 +30332,7 @@ module.exports = require("assert");
 
 /***/ }),
 
-/***/ 8493:
+/***/ 2081:
 /***/ ((module) => {
 
 "use strict";
@@ -30338,7 +30340,7 @@ module.exports = require("child_process");
 
 /***/ }),
 
-/***/ 6113:
+/***/ 3663:
 /***/ ((module) => {
 
 "use strict";

@@ -1,7 +1,7 @@
-import * as core from '@actions/core';
-import { shouldAllowBranch } from './utils';
 import { downloadBranchConfigs } from './utils/dowloadConfigUtils';
 import { extractWorkflowExports } from './utils/extractWorkflowExports';
+import { shouldAllowBranch } from './utils';
+import * as core from '@actions/core';
 
 /**
  * Entry function

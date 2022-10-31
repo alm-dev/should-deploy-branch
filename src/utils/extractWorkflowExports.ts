@@ -19,8 +19,11 @@ export async function extractWorkflowExports(branchConfigWorkspace: string): Pro
   const workflowPath = trim(GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH, '/');
   const path = `${dir}/${workflowPath}`;
 
+  console.log('file to export configs', path);
+
   // Base case
   if (!fs.existsSync(path)) {
+    console.log('does not exist', path);
     return undefined;
   }
 
