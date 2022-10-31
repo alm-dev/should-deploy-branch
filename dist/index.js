@@ -148,14 +148,13 @@ exports.downloadBranchConfigs = void 0;
 const exec = __importStar(__nccwpck_require__(9710));
 function downloadBranchConfigs(input) {
     return __awaiter(this, void 0, void 0, function* () {
-        const WORK_DIR = 'hello sinh nguyen work dir';
-        yield exec.exec('git', ['--global user.email "almteam@se.com']);
-        yield exec.exec('git', ['--global user.name "ALM Team']);
-        yield exec.exec("echo", ['$WOR_DIR'], {
-            env: {
-                WORK_DIR,
-            }
-        });
+        // ENV for cli
+        const env = {
+            WORK_DIR: 'hello sinh nguyen work dir',
+        };
+        yield exec.exec('git', ['config --global user.email "almteam@se.com']);
+        yield exec.exec('git', ['config --global user.name "ALM Team']);
+        yield exec.exec("echo", ['$WOR_DIR'], { env });
         // #     git config --global user.email "almteam@se.com"
         //   #     git config --global user.name "ALM Team"
         //   #     WORK_DIR=${RUNNER_WORKSPACE}/${SERVICE_NAME}-config

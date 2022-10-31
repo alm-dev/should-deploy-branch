@@ -6,14 +6,14 @@ export async function downloadBranchConfigs(input: {
 }): Promise<
   void
 > {
-  const WORK_DIR = 'hello sinh nguyen work dir';
-  await exec.exec('git', ['--global user.email "almteam@se.com']);
-  await exec.exec('git', ['--global user.name "ALM Team']);
-  await exec.exec("echo", ['$WOR_DIR'], {
-    env: {
-      WORK_DIR,
-    }
-  });
+  // ENV for cli
+  const env = {
+    WORK_DIR: 'hello sinh nguyen work dir',
+  };
+
+  await exec.exec('git', ['config --global user.email "almteam@se.com']);
+  await exec.exec('git', ['config --global user.name "ALM Team']);
+  await exec.exec("echo", ['$WOR_DIR'], { env });
 
     // #     git config --global user.email "almteam@se.com"
     //   #     git config --global user.name "ALM Team"
