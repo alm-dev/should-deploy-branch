@@ -1,7 +1,7 @@
 import { trim } from 'lodash';
 import * as core from '@actions/core';
 import * as fs from 'fs';
-import * as yaml2json from 'yaml-to-json';
+import * as yaml from 'yamljs';
 import { GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH } from './constants';
 
 /**
@@ -26,7 +26,9 @@ export async function extractWorkflowExports(branchConfigWorkspace: string): Pro
 
   try {
     const ymlStr = fs.readFileSync(path);
-    return yaml2json(ymlStr);
+    console.log('yml string', ymlStr);
+    const result = yaml.parse(ymlStr);
+    return result;
   } catch (e) {
     core.setFailed(`Unable to parse ${path}. Invalid yaml file.`);
   }
