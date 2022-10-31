@@ -1,10 +1,14 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { isString } from 'lodash';
-import { DEFAULT_ALLOWED_BRANCHES } from './utils/constants';
+import { shouldAllowBranch } from './utils';
 
-async function run() {
-  const inputCurrentBranch = core.getInput('current_branch');
+/**
+ * Entry function
+ */
+async function run(): Promise<
+  number | undefined
+> {
+  // Extract input parameters
   const inputAllowBranches = core.getInput('allow_branches');
   const inputGithubEnv = core.getInput('github_env');
 
@@ -16,35 +20,37 @@ async function run() {
   const payload = JSON.stringify(github.context.payload, undefined, 2)
   console.log(`The event payload: ${payload}`);
 
-  let allowBranches = DEFAULT_ALLOWED_BRANCHES;
-  if (isString(inputAllowBranches)) {
-    const sp = inputAllowBranches.trim().split(',')
-      .map(item => item.trim())
-      .filter(item => item.length > 0);
-    if (sp.length > 0) {
-      allowBranches = [...allowBranches, ...sp];
-    }
+  const { branch, shouldAllow, allowedBranches }
+    = shouldAllowBranch(inputAllowBranches);
+
+  // Base case, throw if branch is not allowed
+  if (!shouldAllow) {
+    core.setFailed([
+      '**************************************************',
+      `Branch "${branch}" is not allowed to deployed.`,
+      '**************************************************'
+    ].join('\n'));
+    return 1;
   }
 
-  const shouldAllow = allowBranches.indexOf(inputCurrentBranch) > -1;
-
+  // Print out result
   console.log({
-    current_branch: inputCurrentBranch,
-    allow_branches: allowBranches.join(', '),
+    current_branch: branch,
+    allow_branches: allowedBranches.join(', '),
     should_deploy: shouldAllow,
   });
 
-  if (shouldAllow) {
-    core.setOutput('should_deploy', JSON.stringify(shouldAllow));
-    core.setOutput('allow_branches', allowBranches.join(', '));
-    core.setOutput('current_branch', inputAllowBranches);
-  } else {
-    core.setFailed(`Branch "${inputCurrentBranch}" is not allowed to deployed.`);
-  }
-
+  // Set out put
+  core.setOutput('should_deploy', JSON.stringify(shouldAllow));
+  core.setOutput('allow_branches', allowedBranches.join(', '));
+  core.setOutput('current_branch', branch);
 
 }
 
+
+/**
+ * Start the game
+ */
 run()
   .then(() => console.log('done'))
   .catch(() => console.log('error'));
