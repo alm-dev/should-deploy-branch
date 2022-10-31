@@ -43,6 +43,7 @@ const dowloadConfigUtils_1 = __nccwpck_require__(4622);
 const extractWorkflowExports_1 = __nccwpck_require__(1437);
 const utils_1 = __nccwpck_require__(2893);
 const core = __importStar(__nccwpck_require__(3722));
+const github = __importStar(__nccwpck_require__(8408));
 /**
  * Entry function
  */
@@ -63,6 +64,7 @@ function run() {
             ].join('\n'));
             return 1;
         }
+        console.log('payload', JSON.stringify(github));
         // Download configs
         const { branchConfigWorkspace } = yield (0, dowloadConfigUtils_1.downloadBranchConfigs)(branch, {
             githubWorkspace: inputGithubWorkspace,

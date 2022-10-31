@@ -2,6 +2,7 @@ import { downloadBranchConfigs } from './utils/dowloadConfigUtils';
 import { extractWorkflowExports } from './utils/extractWorkflowExports';
 import { shouldAllowBranch } from './utils';
 import * as core from '@actions/core';
+import * as github from '@actions/github';
 
 /**
  * Entry function
@@ -27,6 +28,8 @@ async function run(): Promise<
     ].join('\n'));
     return 1;
   }
+
+  console.log('payload', JSON.stringify(github));
 
   // Download configs
   const { branchConfigWorkspace } = await downloadBranchConfigs(
