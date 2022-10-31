@@ -3,14 +3,20 @@ description: 'Whether to deploy a branch or not'
 
 inputs:
   allow_branches:
-    description: 'Comma-separated string of extended branches to allow e.g. "dev, qa, ..."'
+    description: 'Comma-separated string of extended branches to allow e.g. "qa_test, ..."'
     required: false
+  GITHUB_WORKSPACE:
+    description: 'Directory of current github workspace'
+    required: true
+  GITHUB_TOKEN:
+    description: 'Access token to github repo to download config info"'
+    required: true
 
 outputs:
-  current_branch: #id of input
-    description: 'Current branch name being used'
   should_deploy: # id of output
     description: 'Whether to deploy or not'
+  current_branch: #id of input
+    description: 'Current branch name being used'
   allow_branches: #id of output
     description: 'Comma-separated string of branches to allow'
 

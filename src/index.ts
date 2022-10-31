@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import { shouldAllowBranch } from './utils';
 import { downloadBranchConfigs } from './utils/dowloadConfigUtils';
+import { extractWorkflowExports } from './utils/extractWorkflowExports';
 
 /**
  * Entry function
@@ -10,6 +11,8 @@ async function run(): Promise<
 > {
   // Extract input parameters
   const inputAllowBranches = core.getInput('allow_branches');
+  const inputGithubWorkspace = core.getInput('GITHUB_WORKSPACE');
+  const inputGithubToken = core.getInput('GITHUB_TOKEN');
 
   // Perform to validate whether or not allow branch to deploy
   const { branch, shouldAllow, allowedBranches }
@@ -25,21 +28,32 @@ async function run(): Promise<
     return 1;
   }
 
-  // Export
-  await downloadBranchConfigs({ branch });
+  // Download configs
+  const { branchConfigWorkspace } = await downloadBranchConfigs(
+    branch,
+    {
+      githubWorkspace: inputGithubWorkspace,
+      githubToken: inputGithubToken,
+    }
+  );
+
+  // Export config for github actions
+  const githubWorkflowExports =
+    await extractWorkflowExports(branchConfigWorkspace);
 
   // Print out result
   console.log({
     current_branch: branch,
     allow_branches: allowedBranches.join(', '),
     should_deploy: shouldAllow,
+    exports: githubWorkflowExports || {},
   });
 
-  // Set out put
+  //Set output
+  core.setOutput('exports', githubWorkflowExports || {});
   core.setOutput('should_deploy', JSON.stringify(shouldAllow));
   core.setOutput('allow_branches', allowedBranches.join(', '));
   core.setOutput('current_branch', branch);
-
 }
 
 
