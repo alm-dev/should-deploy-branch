@@ -258,7 +258,7 @@ function extractWorkflowExports(branchConfigWorkspace) {
             return undefined;
         }
         try {
-            const ymlStr = fs.readFileSync(workflowExportFile);
+            const ymlStr = fs.readFileSync(workflowExportFile, 'utf8');
             console.log('yml string', ymlStr);
             const result = yaml.parse(ymlStr);
             return result;
