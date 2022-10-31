@@ -146,25 +146,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.downloadBranchConfigs = void 0;
 const exec = __importStar(__nccwpck_require__(9710));
+const github = __importStar(__nccwpck_require__(8408));
 function downloadBranchConfigs(input) {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        // ENV for cli
-        const env = {
-            WORK_DIR: 'hello sinh nguyen work dir',
-        };
+        const { branch, } = input;
+        const { GITHUB_WORKSPACE, GIT_ACTION_TOKEN, } = process.env;
+        const WORK_DIR = `${GITHUB_WORKSPACE}-configs/`;
+        const SERVICE_FULL_NAME = (_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.full_name;
         yield exec.exec('git config --global user.email "almteam@se.com"');
         yield exec.exec('git config --global user.name "ALM Team"');
-        yield exec.exec('echo $WOR_DIR', undefined, { env });
-        yield exec.exec('if [ -d "$WORK_DIR" ]; then rm -rf $WORK_DIR; fi', undefined, { env });
-        // #     git config --global user.email "almteam@se.com"
-        //   #     git config --global user.name "ALM Team"
-        //   #     WORK_DIR=${RUNNER_WORKSPACE}/${SERVICE_NAME}-config
-        //   #     if [ -d "$WORK_DIR" ]; then rm -rf $WORK_DIR; fi
-        //   #     echo "$WOR_DIR"
-        //   #     git clone -b ${BRANCH_NAME} https://alm-dev:${GIT_ACTION_TOKEN}@github.com/alm-dev/${SERVICE_NAME}-configs.git $WORK_DIR
-        //   #     ls -l $WORK_DIR
-        //   #     cp -p -r $WORK_DIR/configs $_/theConfigs
-        //   #     ls -l
+        yield exec.exec([
+            'git clone -b', branch,
+            `"https://alm-dev:${GIT_ACTION_TOKEN}@github.com/${SERVICE_FULL_NAME}-configs.git"`,
+            `"${WORK_DIR}"`,
+        ].join(' '));
+        yield exec.exec(`ls -l ${WORK_DIR}`);
     });
 }
 exports.downloadBranchConfigs = downloadBranchConfigs;

@@ -1,20 +1,37 @@
 import * as io from '@actions/io';
 import * as exec from '@actions/exec';
+import * as github from '@actions/github';
 
 export async function downloadBranchConfigs(input: {
   branch: string;
 }): Promise<
   void
 > {
-  // ENV for cli
-  const env = {
-    WORK_DIR: 'hello sinh nguyen work dir',
-  };
+  const {
+    branch,
+  } = input;
+
+  const {
+    GITHUB_WORKSPACE,
+    GIT_ACTION_TOKEN,
+  } = process.env;
+
+  const WORK_DIR = `${GITHUB_WORKSPACE}-configs/`;
+
+  const SERVICE_FULL_NAME = github.context.payload.repository?.full_name;
 
   await exec.exec('git config --global user.email "almteam@se.com"');
   await exec.exec('git config --global user.name "ALM Team"');
-  await exec.exec('echo $WOR_DIR', undefined, { env });
-  await exec.exec('if [ -d "$WORK_DIR" ]; then rm -rf $WORK_DIR; fi', undefined, { env });
+
+  await exec.exec([
+    'git clone -b', branch,
+    `"https://alm-dev:${GIT_ACTION_TOKEN}@github.com/${SERVICE_FULL_NAME}-configs.git"`,
+    `"${WORK_DIR}"`,
+  ].join(' '));
+
+  await exec.exec(`ls -l ${WORK_DIR}`);
+
+
 
     // #     git config --global user.email "almteam@se.com"
     //   #     git config --global user.name "ALM Team"
