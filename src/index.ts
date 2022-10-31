@@ -14,6 +14,7 @@ async function run(): Promise<
   const inputAllowBranches = core.getInput('allow_branches');
   const inputGithubWorkspace = process.env.GITHUB_WORKSPACE as string;
   const inputGithubToken = process.env.GITHUB_TOKEN as string;
+  const githubStepId = (github.context.action || 'sdb');
 
   // Perform to validate whether or not allow branch to deploy
   const { branch, shouldAllow, allowedBranches }
@@ -40,23 +41,37 @@ async function run(): Promise<
     }
   );
 
-  // Export config for github actions
-  const githubWorkflowExports =
-    await extractWorkflowExports(branchConfigWorkspace);
+  // Extract exporting config for github actions
+  let exps = {};
+  const githubWorkflowExports = await extractWorkflowExports(branchConfigWorkspace);
+  if (githubWorkflowExports) {
+    exps = Object.keys(githubWorkflowExports).reduce((obj, key) => {
+      const outputKey = `${githubStepId}_${key}`;
+      const outputVal = githubWorkflowExports[key];
+      obj[outputKey] = outputVal;
+      return obj;
+    }, {});
+  }
+
+  // Set output
+  core.setOutput('should_deploy', JSON.stringify(shouldAllow));
+  core.setOutput('allow_branches', allowedBranches.join(', '));
+  core.setOutput('current_branch', branch);
+  Object.keys(exps).forEach(key => core.setOutput(key, exps[key]));
+
+  // Set process env
+  process.env = {
+    ...process.env,
+    ...exps,
+  };
 
   // Print out result
   console.log('outputs', {
     current_branch: branch,
     allow_branches: allowedBranches.join(', '),
     should_deploy: shouldAllow,
-    exports: githubWorkflowExports || {},
+    ...exps,
   });
-
-  //Set output
-  core.setOutput('exports', githubWorkflowExports || {});
-  core.setOutput('should_deploy', JSON.stringify(shouldAllow));
-  core.setOutput('allow_branches', allowedBranches.join(', '));
-  core.setOutput('current_branch', branch);
 }
 
 

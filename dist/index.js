@@ -53,6 +53,7 @@ function run() {
         const inputAllowBranches = core.getInput('allow_branches');
         const inputGithubWorkspace = process.env.GITHUB_WORKSPACE;
         const inputGithubToken = process.env.GITHUB_TOKEN;
+        const githubStepId = (github.context.action || 'sdb');
         // Perform to validate whether or not allow branch to deploy
         const { branch, shouldAllow, allowedBranches } = (0, utils_1.shouldAllowBranch)(inputAllowBranches);
         // Base case, throw if branch is not allowed to deploy
@@ -70,20 +71,26 @@ function run() {
             githubWorkspace: inputGithubWorkspace,
             githubToken: inputGithubToken,
         });
-        // Export config for github actions
+        // Extract exporting config for github actions
+        let exps = {};
         const githubWorkflowExports = yield (0, extractWorkflowExports_1.extractWorkflowExports)(branchConfigWorkspace);
-        // Print out result
-        console.log('outputs', {
-            current_branch: branch,
-            allow_branches: allowedBranches.join(', '),
-            should_deploy: shouldAllow,
-            exports: githubWorkflowExports || {},
-        });
-        //Set output
-        core.setOutput('exports', githubWorkflowExports || {});
+        if (githubWorkflowExports) {
+            exps = Object.keys(githubWorkflowExports).reduce((obj, key) => {
+                const outputKey = `${githubStepId}_${key}`;
+                const outputVal = githubWorkflowExports[key];
+                obj[outputKey] = outputVal;
+                return obj;
+            }, {});
+        }
+        // Set output
         core.setOutput('should_deploy', JSON.stringify(shouldAllow));
         core.setOutput('allow_branches', allowedBranches.join(', '));
         core.setOutput('current_branch', branch);
+        Object.keys(exps).forEach(key => core.setOutput(key, exps[key]));
+        // Set process env
+        process.env = Object.assign(Object.assign({}, process.env), exps);
+        // Print out result
+        console.log('outputs', Object.assign({ current_branch: branch, allow_branches: allowedBranches.join(', '), should_deploy: shouldAllow }, exps));
     });
 }
 /**
