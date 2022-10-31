@@ -152,8 +152,8 @@ function downloadBranchConfigs(input) {
         const env = {
             WORK_DIR: 'hello sinh nguyen work dir',
         };
-        yield exec.exec('git', ['config --global user.email "almteam@se.com"']);
-        yield exec.exec('git', ['config --global user.name "ALM Team"']);
+        yield exec.exec('git config', ['--global user.email "almteam@se.com"']);
+        yield exec.exec('git config', ['--global user.name "ALM Team"']);
         yield exec.exec("echo", ['$WOR_DIR'], { env });
         yield exec.exec('if [ -d "$WORK_DIR" ]; then rm -rf $WORK_DIR; fi', undefined, { env });
         // #     git config --global user.email "almteam@se.com"
