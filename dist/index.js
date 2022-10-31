@@ -40,7 +40,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(3722));
-const github = __importStar(__nccwpck_require__(8408));
 const utils_1 = __nccwpck_require__(2893);
 /**
  * Entry function
@@ -49,13 +48,14 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         // Extract input parameters
         const inputAllowBranches = core.getInput('allow_branches');
-        const inputGithubEnv = core.getInput('github_env');
-        console.log("input github env", inputGithubEnv || '__none__');
-        console.log("github", JSON.stringify(github));
-        console.log("github.context", JSON.stringify(github.context));
-        // Get the JSON webhook payload for the event that triggered the workflow
-        const payload = JSON.stringify(github.context.payload, undefined, 2);
-        console.log(`The event payload: ${payload}`);
+        // const inputGithubEnv = core.getInput('github_env');
+        // console.log("input github env", inputGithubEnv || '__none__');
+        // console.log("github", JSON.stringify(github));
+        // console.log("github.context", JSON.stringify(github.context));
+        // // Get the JSON webhook payload for the event that triggered the workflow
+        // const payload = JSON.stringify(github.context.payload, undefined, 2)
+        // console.log(`The event payload: ${payload}`);
+        console.log('process.env', JSON.stringify(process.env));
         const { branch, shouldAllow, allowedBranches } = (0, utils_1.shouldAllowBranch)(inputAllowBranches);
         // Base case, throw if branch is not allowed
         if (!shouldAllow) {
@@ -66,6 +66,7 @@ function run() {
             ].join('\n'));
             return 1;
         }
+        // Export
         // Print out result
         console.log({
             current_branch: branch,
