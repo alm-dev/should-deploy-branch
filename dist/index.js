@@ -100,7 +100,7 @@ run()
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DEFAULT_ALLOWED_BRANCHES = void 0;
+exports.GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH = exports.DEFAULT_ALLOWED_BRANCHES = void 0;
 exports.DEFAULT_ALLOWED_BRANCHES = [
     'dev',
     'qa',
@@ -112,6 +112,7 @@ exports.DEFAULT_ALLOWED_BRANCHES = [
     'prod-eu',
     'prod-aps',
 ];
+exports.GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH = '/exports/github_workflows.yml';
 
 
 /***/ }),
@@ -233,6 +234,7 @@ const lodash_1 = __nccwpck_require__(7316);
 const core = __importStar(__nccwpck_require__(3722));
 const fs = __importStar(__nccwpck_require__(7147));
 const yaml2json = __importStar(__nccwpck_require__(2091));
+const constants_1 = __nccwpck_require__(6540);
 /**
  * Extract workflow export variables for github action
  *
@@ -244,7 +246,8 @@ const yaml2json = __importStar(__nccwpck_require__(2091));
 function extractWorkflowExports(branchConfigWorkspace) {
     return __awaiter(this, void 0, void 0, function* () {
         const dir = (0, lodash_1.trim)(branchConfigWorkspace, '/').trim();
-        const path = `${dir}/exports/github_workflows.yml`;
+        const workflowPath = (0, lodash_1.trim)(constants_1.GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH, '/');
+        const path = `${dir}/${workflowPath}`;
         // Base case
         if (!fs.existsSync(path)) {
             return undefined;

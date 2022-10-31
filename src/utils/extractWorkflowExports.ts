@@ -2,6 +2,7 @@ import { trim } from 'lodash';
 import * as core from '@actions/core';
 import * as fs from 'fs';
 import * as yaml2json from 'yaml-to-json';
+import { GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH } from './constants';
 
 /**
  * Extract workflow export variables for github action
@@ -15,7 +16,8 @@ export async function extractWorkflowExports(branchConfigWorkspace: string): Pro
   [key: string]: string | number | boolean | any;
 } | undefined> {
   const dir = trim(branchConfigWorkspace, '/').trim();
-  const path = `${dir}/exports/github_workflows.yml`;
+  const workflowPath = trim(GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH, '/');
+  const path = `${dir}/${workflowPath}`;
 
   // Base case
   if (!fs.existsSync(path)) {

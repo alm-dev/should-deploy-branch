@@ -11,3 +11,5 @@ export const DEFAULT_ALLOWED_BRANCHES = [
     'prod-eu',
     'prod-aps',
 ];
+
+export const GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH = '/exports/github_workflows.yml';
