@@ -10,15 +10,17 @@ async function run(): Promise<
 > {
   // Extract input parameters
   const inputAllowBranches = core.getInput('allow_branches');
-  const inputGithubEnv = core.getInput('github_env');
 
-  console.log("input github env", inputGithubEnv || '__none__');
-  console.log("github", JSON.stringify(github));
-  console.log("github.context", JSON.stringify(github.context));
+  // const inputGithubEnv = core.getInput('github_env');
+  // console.log("input github env", inputGithubEnv || '__none__');
+  // console.log("github", JSON.stringify(github));
+  // console.log("github.context", JSON.stringify(github.context));
 
-  // Get the JSON webhook payload for the event that triggered the workflow
-  const payload = JSON.stringify(github.context.payload, undefined, 2)
-  console.log(`The event payload: ${payload}`);
+  // // Get the JSON webhook payload for the event that triggered the workflow
+  // const payload = JSON.stringify(github.context.payload, undefined, 2)
+  // console.log(`The event payload: ${payload}`);
+
+  console.log('process.env', JSON.stringify(process.env));
 
   const { branch, shouldAllow, allowedBranches }
     = shouldAllowBranch(inputAllowBranches);
@@ -32,6 +34,9 @@ async function run(): Promise<
     ].join('\n'));
     return 1;
   }
+
+  // Export
+
 
   // Print out result
   console.log({
