@@ -50,8 +50,8 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         // Extract input parameters
         const inputAllowBranches = core.getInput('allow_branches');
-        const inputGithubWorkspace = core.getInput('GITHUB_WORKSPACE');
-        const inputGithubToken = core.getInput('GITHUB_TOKEN');
+        const inputGithubWorkspace = process.env.GITHUB_WORKSPACE;
+        const inputGithubToken = process.env.GITHUB_TOKEN;
         // Perform to validate whether or not allow branch to deploy
         const { branch, shouldAllow, allowedBranches } = (0, utils_1.shouldAllowBranch)(inputAllowBranches);
         // Base case, throw if branch is not allowed to deploy
@@ -89,7 +89,10 @@ function run() {
  */
 run()
     .then(() => console.log('done'))
-    .catch(() => console.log('error'));
+    .catch((err) => {
+    console.log('error', JSON.stringify(err));
+    core.setFailed(`Unexpected fail - ${err.message}`);
+});
 
 
 /***/ }),

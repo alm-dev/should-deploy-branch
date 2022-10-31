@@ -5,6 +5,8 @@ inputs:
   allow_branches:
     description: 'Comma-separated string of extended branches to allow e.g. "qa_test, ..."'
     required: false
+
+env:
   GITHUB_WORKSPACE:
     description: 'Directory of current github workspace'
     required: true

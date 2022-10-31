@@ -11,8 +11,8 @@ async function run(): Promise<
 > {
   // Extract input parameters
   const inputAllowBranches = core.getInput('allow_branches');
-  const inputGithubWorkspace = core.getInput('GITHUB_WORKSPACE');
-  const inputGithubToken = core.getInput('GITHUB_TOKEN');
+  const inputGithubWorkspace = process.env.GITHUB_WORKSPACE as string;
+  const inputGithubToken = process.env.GITHUB_TOKEN as string;
 
   // Perform to validate whether or not allow branch to deploy
   const { branch, shouldAllow, allowedBranches }
@@ -62,4 +62,7 @@ async function run(): Promise<
  */
 run()
   .then(() => console.log('done'))
-  .catch(() => console.log('error'));
+  .catch((err: Error) => {
+    console.log('error', JSON.stringify(err));
+    core.setFailed(`Unexpected fail - ${err.message}`);
+  });
