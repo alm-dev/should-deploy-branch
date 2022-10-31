@@ -42,7 +42,7 @@ async function run(): Promise<
     await extractWorkflowExports(branchConfigWorkspace);
 
   // Print out result
-  console.log({
+  console.log('outputs', {
     current_branch: branch,
     allow_branches: allowedBranches.join(', '),
     should_deploy: shouldAllow,

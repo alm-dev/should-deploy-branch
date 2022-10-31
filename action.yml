@@ -17,10 +17,12 @@ env:
 outputs:
   should_deploy: # id of output
     description: 'Whether to deploy or not'
-  current_branch: #id of input
+  current_branch: #id of output
     description: 'Current branch name being used'
   allow_branches: #id of output
     description: 'Comma-separated string of branches to allow'
+  exports: #id of output
+    description: 'An option contains any exports'
 
 runs:
   using: 'node16'

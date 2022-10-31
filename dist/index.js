@@ -71,7 +71,7 @@ function run() {
         // Export config for github actions
         const githubWorkflowExports = yield (0, extractWorkflowExports_1.extractWorkflowExports)(branchConfigWorkspace);
         // Print out result
-        console.log({
+        console.log('outputs', {
             current_branch: branch,
             allow_branches: allowedBranches.join(', '),
             should_deploy: shouldAllow,
@@ -233,11 +233,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.extractWorkflowExports = void 0;
+const constants_1 = __nccwpck_require__(6540);
 const lodash_1 = __nccwpck_require__(7316);
 const core = __importStar(__nccwpck_require__(3722));
 const fs = __importStar(__nccwpck_require__(7147));
 const yaml = __importStar(__nccwpck_require__(5480));
-const constants_1 = __nccwpck_require__(6540);
 /**
  * Extract workflow export variables for github action
  *
@@ -251,15 +251,12 @@ function extractWorkflowExports(branchConfigWorkspace) {
         const dir = (0, lodash_1.trimEnd)(branchConfigWorkspace, '/').trim();
         const workflowPath = (0, lodash_1.trim)(constants_1.GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH, '/');
         const workflowExportFile = `${dir}/${workflowPath}`;
-        console.log('file to export configs', workflowExportFile);
         // Base case
         if (!fs.existsSync(workflowExportFile)) {
-            console.log('does not exist', workflowExportFile);
             return undefined;
         }
         try {
             const ymlStr = fs.readFileSync(workflowExportFile, 'utf8');
-            console.log('yml string', ymlStr);
             const result = yaml.parse(ymlStr);
             return result;
         }

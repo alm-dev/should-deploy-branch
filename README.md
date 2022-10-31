@@ -20,4 +20,8 @@ Whether or not, should allow to deploy current branch
 
 ```allow_branches``` - {string} - Comma-separated list of branches to allow e.g. "dev, qa, sit, ..."
 
+```exports``` - {object} - For best practices, all exported variables from the program should go here
+
+
+
 
