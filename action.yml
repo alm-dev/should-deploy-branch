@@ -1,5 +1,6 @@
 name: 'Should Deploy Branch'
 description: 'Whether to deploy a branch or not'
+
 inputs:
   # github_env: #id of input
   #   description: 'The action to execute e.g. "SHOULD_DEPLOY_BRANCH" or "EXPORT_GITHUB_ENV", etc',
@@ -10,6 +11,7 @@ inputs:
   allow_branches:
     description: 'Comma-separated string of branches to allow e.g. "dev, qa, ..."'
     required: false
+
 outputs:
   current_branch: #id of input
     description: 'Current branch name being used'
@@ -17,6 +19,7 @@ outputs:
     description: 'Whether to deploy or not'
   allow_branches: #id of output
     description: 'Comma-separated string of branches to allow'
+
 runs:
   using: 'node16'
   main: 'dist/index.js'

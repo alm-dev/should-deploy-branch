@@ -1,6 +1,3 @@
-import * as io from '@actions/io';
-import * as exec from '@actions/exec';
-
 /**
  * Sleep
  *
@@ -12,22 +9,4 @@ export async function sleep(ms: number): Promise<void> {
     return new Promise(resolve => {
         setTimeout(resolve, ms);
     });
-}
-
-/**
- * Set github env variable
- *
- * @public
- * @async
- * @param name - Name of variable
- * @param value - Value of variable
- */
-export async function setGithubEnv(name: string, value: string): Promise<void> {
-    const echoPath = await io.which('echo', true);
-    await exec.exec('echo', [`"${name}=${value}" >> $GITHUB_ENV`]);
-    await exec.exec('echo', ['$GITHUB_ENV']);
-    console.log('sleep for 5s');
-    await sleep(5000);
-    console.log('done sleep for 5s');
-    // await exec.exec(`"${echoPath}"`, [`"${name}=${value}" >> $GITHUB_ENV`]);
 }
