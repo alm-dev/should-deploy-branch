@@ -43,7 +43,6 @@ const dowloadConfigUtils_1 = __nccwpck_require__(4622);
 const extractWorkflowExports_1 = __nccwpck_require__(1437);
 const utils_1 = __nccwpck_require__(2893);
 const core = __importStar(__nccwpck_require__(3722));
-const github = __importStar(__nccwpck_require__(8408));
 /**
  * Entry function
  */
@@ -53,7 +52,6 @@ function run() {
         const inputAllowBranches = core.getInput('allow_branches');
         const inputGithubWorkspace = process.env.GITHUB_WORKSPACE;
         const inputGithubToken = process.env.GITHUB_TOKEN;
-        const githubStepId = (github.context.action || 'sdb');
         // Perform to validate whether or not allow branch to deploy
         const { branch, shouldAllow, allowedBranches } = (0, utils_1.shouldAllowBranch)(inputAllowBranches);
         // Base case, throw if branch is not allowed to deploy
@@ -65,32 +63,26 @@ function run() {
             ].join('\n'));
             return 1;
         }
-        console.log('payload', JSON.stringify(github));
-        // Download configs
+        /**
+         * Download configs
+         */
         const { branchConfigWorkspace } = yield (0, dowloadConfigUtils_1.downloadBranchConfigs)(branch, {
             githubWorkspace: inputGithubWorkspace,
             githubToken: inputGithubToken,
         });
-        // Extract exporting config for github actions
-        let exps = {};
+        /**
+         * Extract exporting config for github actions
+         */
         const githubWorkflowExports = yield (0, extractWorkflowExports_1.extractWorkflowExports)(branchConfigWorkspace);
-        if (githubWorkflowExports) {
-            exps = Object.keys(githubWorkflowExports).reduce((obj, key) => {
-                const outputKey = `${githubStepId}_${key}`;
-                const outputVal = githubWorkflowExports[key];
-                obj[outputKey] = outputVal;
-                return obj;
-            }, {});
-        }
-        // Set output
+        /**
+         * Set output
+         */
+        Object.keys(githubWorkflowExports || {}).forEach(key => core.setOutput(key, githubWorkflowExports === null || githubWorkflowExports === void 0 ? void 0 : githubWorkflowExports[key]));
         core.setOutput('should_deploy', JSON.stringify(shouldAllow));
         core.setOutput('allow_branches', allowedBranches.join(', '));
         core.setOutput('current_branch', branch);
-        Object.keys(exps).forEach(key => core.setOutput(key, exps[key]));
-        // Set process env
-        process.env = Object.assign(Object.assign({}, process.env), exps);
         // Print out result
-        console.log('outputs', Object.assign({ current_branch: branch, allow_branches: allowedBranches.join(', '), should_deploy: shouldAllow }, exps));
+        console.log('outputs', Object.assign(Object.assign({}, githubWorkflowExports), { current_branch: branch, allow_branches: allowedBranches.join(', '), should_deploy: shouldAllow }));
     });
 }
 /**
