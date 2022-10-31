@@ -248,23 +248,23 @@ const constants_1 = __nccwpck_require__(6540);
  */
 function extractWorkflowExports(branchConfigWorkspace) {
     return __awaiter(this, void 0, void 0, function* () {
-        const dir = (0, lodash_1.trim)(branchConfigWorkspace, '/').trim();
+        const dir = (0, lodash_1.trimEnd)(branchConfigWorkspace, '/').trim();
         const workflowPath = (0, lodash_1.trim)(constants_1.GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH, '/');
-        const path = `${dir}/${workflowPath}`;
-        console.log('file to export configs', path);
+        const workflowExportFile = `${dir}/${workflowPath}`;
+        console.log('file to export configs', workflowExportFile);
         // Base case
-        if (!fs.existsSync(path)) {
-            console.log('does not exist', path);
+        if (!fs.existsSync(workflowExportFile)) {
+            console.log('does not exist', workflowExportFile);
             return undefined;
         }
         try {
-            const ymlStr = fs.readFileSync(path);
+            const ymlStr = fs.readFileSync(workflowExportFile);
             console.log('yml string', ymlStr);
             const result = yaml.parse(ymlStr);
             return result;
         }
         catch (e) {
-            core.setFailed(`Unable to parse ${path}. Invalid yaml file.`);
+            core.setFailed(`Unable to parse ${workflowExportFile}. Invalid yaml file.`);
         }
     });
 }
