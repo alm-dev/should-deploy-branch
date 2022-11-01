@@ -39,10 +39,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const copyBranchConfigs_1 = __nccwpck_require__(9099);
 const dowloadConfigUtils_1 = __nccwpck_require__(4622);
 const extractWorkflowExports_1 = __nccwpck_require__(1437);
 const utils_1 = __nccwpck_require__(2893);
 const core = __importStar(__nccwpck_require__(3722));
+const github = __importStar(__nccwpck_require__(8408));
 /**
  * Entry function
  */
@@ -73,7 +75,17 @@ function run() {
         /**
          * Extract exporting config for github actions
          */
-        const githubWorkflowExports = yield (0, extractWorkflowExports_1.extractWorkflowExports)(branchConfigWorkspace);
+        const githubWorkflowExports = yield (0, extractWorkflowExports_1.extractWorkflowExports)({
+            srcDir: branchConfigWorkspace,
+            srcPaths: '/exports/github_workflows.yml',
+        });
+        /**
+         * Copy configs to right places
+         */
+        yield (0, copyBranchConfigs_1.copyBranchConfigs)({
+            srcDir: branchConfigWorkspace,
+            destDir: inputGithubWorkspace,
+        });
         /**
          * Set output
          */
@@ -82,7 +94,7 @@ function run() {
         core.setOutput('allow_branches', allowedBranches.join(', '));
         core.setOutput('current_branch', branch);
         // Print out result
-        console.log('outputs', Object.assign(Object.assign({}, githubWorkflowExports), { current_branch: branch, allow_branches: allowedBranches.join(', '), should_deploy: shouldAllow }));
+        console.log(`steps.${github.context.action || '{give_an_id}'}.outputs`, Object.assign(Object.assign({}, githubWorkflowExports), { current_branch: branch, allow_branches: allowedBranches.join(', '), should_deploy: shouldAllow }));
     });
 }
 /**
@@ -117,6 +129,84 @@ exports.DEFAULT_ALLOWED_BRANCHES = [
     'prod-aps',
 ];
 exports.GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH = '/exports/github_workflows.yml';
+
+
+/***/ }),
+
+/***/ 9099:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.copyBranchConfigs = void 0;
+const lodash_1 = __nccwpck_require__(7316);
+const io = __importStar(__nccwpck_require__(8974));
+/**
+ * Copy configs files to destination
+ *
+ * @public
+ * @async
+ * @param options - Config directory to extract from. `{branchConfigWorkspace}/exports/github_workflows.yml`
+ * @returns - Exported config object
+ */
+function copyBranchConfigs(options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const files = [
+            {
+                srcFile: '/aws/serverless/providers/environment.yml',
+                destFile: '/serverless/providers/environment.yml',
+            },
+            {
+                srcFile: '/aws/serverless.yml',
+                destFile: '/serverless.yml',
+            }
+        ];
+        const srcDir = (0, lodash_1.trimEnd)(options.srcDir, '/').trim();
+        const destDir = (0, lodash_1.trimEnd)(options.destDir, '/').trim();
+        const promises = files
+            .map(f => ({
+            srcFile: `${srcDir}${f.srcFile}`,
+            destFile: `${destDir}${f.destFile}`,
+        }))
+            .map(f => io.cp(f.srcFile, f.destFile));
+        // Wait for all
+        yield Promise.all(promises);
+    });
+}
+exports.copyBranchConfigs = copyBranchConfigs;
 
 
 /***/ }),
@@ -234,7 +324,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.extractWorkflowExports = void 0;
-const constants_1 = __nccwpck_require__(6540);
 const lodash_1 = __nccwpck_require__(7316);
 const core = __importStar(__nccwpck_require__(3722));
 const fs = __importStar(__nccwpck_require__(7147));
@@ -244,26 +333,33 @@ const yaml = __importStar(__nccwpck_require__(5480));
  *
  * @public
  * @async
- * @param branchConfigWorkspace - Config directory to extract from. `{branchConfigWorkspace}/exports/github_workflows.yml`
+ * @param options - Config directory to extract from. `{branchConfigWorkspace}/exports/github_workflows.yml`
  * @returns - Exported config object
  */
-function extractWorkflowExports(branchConfigWorkspace) {
+function extractWorkflowExports(options) {
     return __awaiter(this, void 0, void 0, function* () {
-        const dir = (0, lodash_1.trimEnd)(branchConfigWorkspace, '/').trim();
-        const workflowPath = (0, lodash_1.trim)(constants_1.GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH, '/');
-        const workflowExportFile = `${dir}/${workflowPath}`;
-        // Base case
-        if (!fs.existsSync(workflowExportFile)) {
-            return undefined;
-        }
+        const srcDir = options.srcDir;
+        const srcPaths = (0, lodash_1.isArray)(options.srcPaths) ? options.srcPaths : [options.srcPaths];
+        const dir = (0, lodash_1.trimEnd)(srcDir, '/').trim();
+        let ret = undefined;
+        let workflowExportFile;
         try {
-            const ymlStr = fs.readFileSync(workflowExportFile, 'utf8');
-            const result = yaml.parse(ymlStr);
-            return result;
+            for (let i = 0; i < srcPaths.length; i++) {
+                const workflowPath = (0, lodash_1.trim)(srcPaths[i], '/');
+                workflowExportFile = `${dir}/${workflowPath}`;
+                if (!fs.existsSync(workflowExportFile))
+                    continue;
+                const ymlStr = fs.readFileSync(workflowExportFile, 'utf8');
+                const result = yaml.parse(ymlStr);
+                if (result) {
+                    ret = Object.assign(Object.assign({}, ret), result);
+                }
+            }
         }
         catch (e) {
             core.setFailed(`Unable to parse ${workflowExportFile}. Invalid yaml file.`);
         }
+        return ret;
     });
 }
 exports.extractWorkflowExports = extractWorkflowExports;

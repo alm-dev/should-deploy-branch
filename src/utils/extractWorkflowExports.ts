@@ -1,5 +1,5 @@
 import { GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH } from './constants';
-import { trimEnd, trim } from 'lodash';
+import { trimEnd, trim, isArray } from 'lodash';
 import * as core from '@actions/core';
 import * as fs from 'fs';
 import * as yaml from 'yamljs';
@@ -9,27 +9,45 @@ import * as yaml from 'yamljs';
  *
  * @public
  * @async
- * @param branchConfigWorkspace - Config directory to extract from. `{branchConfigWorkspace}/exports/github_workflows.yml`
+ * @param options - Config directory to extract from. `{branchConfigWorkspace}/exports/github_workflows.yml`
  * @returns - Exported config object
  */
-export async function extractWorkflowExports(branchConfigWorkspace: string): Promise<{
-  [key: string]: string | number | boolean | any;
-} | undefined> {
-  const dir = trimEnd(branchConfigWorkspace, '/').trim();
-  const workflowPath = trim(GITHUB_WORKFLOW_EXPORT_RELATIVE_PATH, '/');
+export async function extractWorkflowExports(options: {
+  srcDir: string;
+  srcPaths: string | string[];
+}): Promise<
+  Record<string, any> | undefined
+> {
+  const srcDir = options.srcDir;
+  const srcPaths = isArray(options.srcPaths) ? options.srcPaths : [options.srcPaths];
 
-  const workflowExportFile = `${dir}/${workflowPath}`;
+  const dir = trimEnd(srcDir, '/').trim();
 
-  // Base case
-  if (!fs.existsSync(workflowExportFile)) {
-    return undefined;
-  }
+  let ret = undefined as unknown as Record<string, any>;
+  let workflowExportFile;
 
   try {
-    const ymlStr = fs.readFileSync(workflowExportFile, 'utf8');
-    const result = yaml.parse(ymlStr);
-    return result;
+    for (let i = 0; i < srcPaths.length; i++) {
+      const workflowPath = trim(srcPaths[i], '/');
+
+      workflowExportFile = `${dir}/${workflowPath}`;
+
+      if (!fs.existsSync(workflowExportFile)) continue;
+
+      const ymlStr = fs.readFileSync(workflowExportFile, 'utf8');
+      const result = yaml.parse(ymlStr);
+
+      if (result) {
+        ret = {
+          ...ret,
+          ...result,
+        };
+      }
+    }
+
   } catch (e) {
     core.setFailed(`Unable to parse ${workflowExportFile}. Invalid yaml file.`);
   }
+
+  return ret;
 }

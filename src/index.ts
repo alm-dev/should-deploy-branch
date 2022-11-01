@@ -1,7 +1,9 @@
+import { copyBranchConfigs } from './utils/copyBranchConfigs';
 import { downloadBranchConfigs } from './utils/dowloadConfigUtils';
 import { extractWorkflowExports } from './utils/extractWorkflowExports';
 import { shouldAllowBranch } from './utils';
 import * as core from '@actions/core';
+import * as github from '@actions/github';
 
 /**
  * Entry function
@@ -39,7 +41,18 @@ async function run(): Promise<
   /**
    * Extract exporting config for github actions
    */
-  const githubWorkflowExports = await extractWorkflowExports(branchConfigWorkspace);
+  const githubWorkflowExports = await extractWorkflowExports({
+    srcDir: branchConfigWorkspace,
+    srcPaths: '/exports/github_workflows.yml',
+  });
+
+  /**
+   * Copy configs to right places
+   */
+  await copyBranchConfigs({
+    srcDir: branchConfigWorkspace,
+    destDir: inputGithubWorkspace,
+  });
 
   /**
    * Set output
@@ -50,12 +63,15 @@ async function run(): Promise<
   core.setOutput('current_branch', branch);
 
   // Print out result
-  console.log('outputs', {
-    ...githubWorkflowExports,
-    current_branch: branch,
-    allow_branches: allowedBranches.join(', '),
-    should_deploy: shouldAllow,
-  });
+  console.log(
+    `steps.${github.context.action || '{give_an_id}'}.outputs`,
+    {
+      ...githubWorkflowExports,
+      current_branch: branch,
+      allow_branches: allowedBranches.join(', '),
+      should_deploy: shouldAllow,
+    }
+  );
 }
 
 
